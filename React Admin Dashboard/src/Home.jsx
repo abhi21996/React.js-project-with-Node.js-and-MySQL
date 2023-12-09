@@ -1,144 +1,187 @@
-import React from 'react'
-import 
-{ BsFillArchiveFill, BsFillGrid3X3GapFill, BsPeopleFill, BsFillBellFill}
- from 'react-icons/bs'
- import 
- { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } 
- from 'recharts';
+import React, { useState, useEffect } from 'react';
+import {
+  BsFillArchiveFill,
+  BsFillGrid3X3GapFill,
+  BsPeopleFill,
+  BsFillBellFill,
+  BsJustify,
+} from 'react-icons/bs';
+import Button from 'react-bootstrap/Button';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { Chart as ChartJS } from "chart.js/auto"
+import { Pie, Doughnut } from "react-chartjs-2"
+
+// defaults.maintainAspectRatio = false;
+// defaults.responsive = true;
+
+// defaults.plugins.title.display = true;
+// defaults.plugins.title.align = "start";
+// defaults.plugins.title.font.size = 20;
+// defaults.plugins.title.color = "black";
 
 function Home() {
 
-    const data = [
-        {
-          name: 'Page A',
-          uv: 4000,
-          pv: 2400,
-          amt: 2400,
-        },
-        {
-          name: 'Page B',
-          uv: 3000,
-          pv: 1398,
-          amt: 2210,
-        },
-        {
-          name: 'Page C',
-          uv: 2000,
-          pv: 9800,
-          amt: 2290,
-        },
-        {
-          name: 'Page D',
-          uv: 2780,
-          pv: 3908,
-          amt: 2000,
-        },
-        {
-          name: 'Page E',
-          uv: 1890,
-          pv: 4800,
-          amt: 2181,
-        },
-        {
-          name: 'Page F',
-          uv: 2390,
-          pv: 3800,
-          amt: 2500,
-        },
-        {
-          name: 'Page G',
-          uv: 3490,
-          pv: 4300,
-          amt: 2100,
-        },
-      ];
-     
+  const [genderData, setGenderData] = useState([]);
+  const [statusData, setStatusData] = useState([]);
+  const [studentsCount, setStudentsCount] = useState(0)
+  const[standardsCount, setStandardsCount] = useState(0)
+  const[teachersCount, setTeachersCount] = useState(0)
+  const[resultsCount, setResultsCount] = useState(0)
+
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      // Fetch gender data
+      const genderResponse = await axios.get('http://localhost:4008/genderCounts');
+      const genderChartData = genderResponse.data;
+
+      // Fetch status data
+      const statusResponse = await axios.get('http://localhost:4008/passsfailcounts');
+      const statusChartData = statusResponse.data;
+
+      // Fetch total counts for each category
+      const studentsCountResponse = await axios.get('http://localhost:4008/countstudents');
+      console.log('Students Count Response:', studentsCountResponse);
+      const standardsCountResponse = await axios.get('http://localhost:4008/countstandards');
+      const teachersCountResponse = await axios.get('http://localhost:4008/countteachers');
+      const resultsCountResponse = await axios.get('http://localhost:4008/countresults');
+
+      const studentsCount = studentsCountResponse.data;
+      const standardsCount = standardsCountResponse.data;
+      const teachersCount = teachersCountResponse.data;
+      const resultsCount = resultsCountResponse.data;
+      console.log('Students Count:', studentsCount);
+      // Update state with the counts
+      setGenderData(genderChartData);
+      setStatusData(statusChartData);
+      setStudentsCount(studentsCount);
+      setStandardsCount(standardsCount);
+      setTeachersCount(teachersCount);
+      setResultsCount(resultsCount);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
 
   return (
-    <main className='main-container'>
-        <div className='main-title'>
-            <h3>DASHBOARD</h3>
-        </div>
 
-        <div className='main-cards'>
-            <div className='card'>
-                <div className='card-inner'>
-                    <h3>PRODUCTS</h3>
-                    <BsFillArchiveFill className='card_icon'/>
-                </div>
-                <h1>300</h1>
-            </div>
-            <div className='card'>
-                <div className='card-inner'>
-                    <h3>CATEGORIES</h3>
-                    <BsFillGrid3X3GapFill className='card_icon'/>
-                </div>
-                <h1>12</h1>
-            </div>
-            <div className='card'>
-                <div className='card-inner'>
-                    <h3>CUSTOMERS</h3>
-                    <BsPeopleFill className='card_icon'/>
-                </div>
-                <h1>33</h1>
-            </div>
-            <div className='card'>
-                <div className='card-inner'>
-                    <h3>ALERTS</h3>
-                    <BsFillBellFill className='card_icon'/>
-                </div>
-                <h1>42</h1>
-            </div>
-        </div>
+    <main className='main-container' style={{ backgroundColor: '#1d2634' }}>
+      <div className='main-title'>
+        <h3 >DASHBOARD</h3>
+      </div>
 
-        <div className='charts'>
-            <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-            width={500}
-            height={300}
-            data={data}
-            margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5,
+      <div className='main-cards'>
+        <Link style={{ textDecoration: "none" }} to="/studentslist">
+          <div className='card' style={{ cursor: 'pointer', backgroundColor: "#2962ff" }}>
+            <div className='card-inner'>
+              <h3>STUDENTS</h3>
+              <BsPeopleFill className='card_icon' />
+              {studentsCount !== null && (
+                <div className='statistical-value'>
+                  <h3 style={{ color: 'black' }}>{`: ${studentsCount}`}</h3>
+                </div>
+              )}
+            </div>
+          </div>
+        </Link>
+        <Link style={{ textDecoration: "none" }} to="/homestandards">
+          <div className='card' style={{ cursor: 'pointer', backgroundColor: "#ff6d00" }}>
+            <div className='card-inner'>
+              <h3>STANDARD</h3>
+              <BsFillGrid3X3GapFill className='card_icon' />
+              {studentsCount !== null && (
+                <div className='statistical-value'>
+                  <h3 style={{ color: 'black' }}>{`: ${standardsCount}`}</h3>
+                </div>
+              )}
+            </div>
+
+          </div>
+        </Link>
+        <Link style={{ textDecoration: "none" }} to="/hometeachers">
+          <div className='card' style={{ cursor: 'pointer', backgroundColor: "#2e7d32" }}>
+            <div className='card-inner'>
+              <h3>TEACHERS</h3>
+              <BsFillArchiveFill className='card_icon' />
+              {studentsCount !== null && (
+                <div className='statistical-value'>
+                  <h3 style={{ color: 'black' }}>{`: ${teachersCount}`}</h3>
+                </div>
+              )}
+            </div>
+
+          </div>
+        </Link>
+        <Link style={{ textDecoration: "none" }} to="/vieres">
+          <div className='card' style={{ cursor: 'pointer', backgroundColor: "#d50000" }}>
+            <div className='card-inner'>
+              <h3>RESULTS</h3>
+              <BsFillBellFill className='card_icon' />
+              {studentsCount !== null && (
+                <div className='statistical-value'>
+                  <h3 style={{ color: 'black' }}>{`: ${resultsCount}`}</h3>
+                </div>
+              )}
+            </div>
+          </div>
+        </Link>
+      </div>
+      <br />
+      <br />
+      <div className='chart-container'>
+        <div className='dataCard customerCard'>
+          <Pie
+            data={{
+              labels: ['Boys', 'Girls'],
+              datasets: [
+                {
+                  label: 'Gender Distribution',
+                  data: genderData,
+                  backgroundColor: ['#36A2EB', '#FF6384'],
+                },
+              ],
             }}
-            >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="pv" fill="#8884d8" />
-                <Bar dataKey="uv" fill="#82ca9d" />
-                </BarChart>
-            </ResponsiveContainer>
-
-            <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                width={500}
-                height={300}
-                data={data}
-                margin={{
-                    top: 5,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                }}
-                >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
-                <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-                </LineChart>
-            </ResponsiveContainer>
-
+            options={{
+              plugins: {
+                title: {
+                  text: 'Gender Distribution',
+                },
+              },
+            }}
+          />
         </div>
+
+        <div className='dataCard categoryCard'>
+          <Doughnut
+            data={{
+              labels: ['Pass', 'Fail'],
+              datasets: [
+                {
+                  label: 'Pass/Fail Status',
+                  data: statusData,
+                  backgroundColor: ['#4CAF50', '#FF4500'],
+                },
+              ],
+            }}
+            options={{
+              plugins: {
+                title: {
+                  text: 'Pass/Fail Status',
+                },
+              },
+            }}
+          />
+        </div>
+      </div>
     </main>
-  )
+
+  );
 }
 
-export default Home
+export default Home;
