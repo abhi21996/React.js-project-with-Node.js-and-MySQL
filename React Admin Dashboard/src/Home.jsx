@@ -21,14 +21,14 @@ import { Pie, Doughnut } from "react-chartjs-2"
 // defaults.plugins.title.color = "black";
 
 function Home() {
-
+  /////creating state variable to store value with innitial value as anything number, array, string or object /////////
   const [genderData, setGenderData] = useState([]);
   const [statusData, setStatusData] = useState([]);
   const [studentsCount, setStudentsCount] = useState(0)
   const[standardsCount, setStandardsCount] = useState(0)
   const[teachersCount, setTeachersCount] = useState(0)
   const[resultsCount, setResultsCount] = useState(0)
-
+ /////creating state variable to store value with innitial value as anything number, array, string or object /////////
 
   useEffect(() => {
     fetchData();
@@ -82,11 +82,13 @@ function Home() {
             <div className='card-inner'>
               <h3>STUDENTS</h3>
               <BsPeopleFill className='card_icon' />
+              //////<conditional rendering ternary, && operators based on condition is true or false(by mean null,undefined,false)///////
               {studentsCount !== null && (
                 <div className='statistical-value'>
                   <h3 style={{ color: 'black' }}>{`: ${studentsCount}`}</h3>
                 </div>
               )}
+              //////<conditional rendering ternary, && operators based on condition is true or false(by mean null,undefined,false)///////
             </div>
           </div>
         </Link>
